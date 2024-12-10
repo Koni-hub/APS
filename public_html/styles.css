@@ -1,0 +1,160 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.navbar{
+    display: flex;
+    align-items: center;
+    padding: 20px;
+}
+nav{
+    flex: 1;
+    text-align: right;
+}
+nav ul{
+    display: inline-block;
+    list-style-type: none;
+}
+nav ul li{
+    display: inline-block;
+    margin-right: 20px;
+}
+a{
+    text-decoration: none;
+    color: #555;
+}
+p{
+    color: #555;
+}
+.container{
+    max-width: 1300px;
+    margin: auto;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+.row{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.col-2{
+    flex-basis: 100px;
+    min-width: 500px;
+}
+.col-2 img{
+    max-width: 100%;
+    padding: 100px 0;
+}
+.col-2 h1{
+    font-size: 35px;
+    line-height: 35px;
+    margin: 15px 0;
+}
+.header{
+    background: radial-gradient(gray,gray);
+}
+.header .row{
+    margin-top: 70px;
+}
+.btn{
+    display: inline-block;
+    background: gray;
+    color: gray;
+    padding: 5px 10px;
+    margin: 10px 0px;
+    border-radius: 10px;
+}
+.col-3 h2{
+    font-size: 20px;
+    line-height: 30Spx;
+    margin: 10px;
+}
+
+/*-------------------login-page------------------*/
+.login-page{
+    padding: 50px 0;
+    background: radial-gradient(gray,gray);
+}
+.form-container{
+    background: gray;
+    width: 250px;
+    height: 400px;
+    position: relative;
+    text-align: center;
+    padding: 20px 0;
+    margin: auto;
+    box-shadow: 0 0 20px 0px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+.form-container span{
+    font-weight: bold;
+    padding: 0 10px;
+    color: hsl(0, 100%, 3%);
+    cursor: pointer;
+    width: 100px;
+    display: inline-block;
+}
+.form-btn{
+    display: inline-block;
+}
+.form-container form{
+    max-width: 300px;
+    padding: 0 20px;
+    position: absolute;
+    top: 130px;
+    transition: transform 1s;
+}
+form input{
+    width: 250px;
+    height: 30px;
+    margin: 10px 0;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+}
+form .btn{
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    margin: 10px 0;
+}
+form .btn:focus{
+    outline: none;
+}
+#LoginForm{
+    left: -300px;
+}
+#LoginForm{
+    left: 0;
+}
+form a{
+    font-size: 12px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
