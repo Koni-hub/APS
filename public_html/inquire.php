@@ -45,7 +45,7 @@ $result = $conn->query($sql);
                                     <?php endwhile; ?>
                                     <?php else: ?>
                                     <tr>
-                                        <th colspan="4"><center>No Data on audit trails.</center></th>
+                                        <th colspan="4"><center>No Data on Inquiry.</center></th>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
