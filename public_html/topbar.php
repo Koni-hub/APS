@@ -8,21 +8,6 @@
     border-radius: 50% 50%;
     color: #000000b3;
   }
-  .badge-txt {
-    color: white;
-    background-color: red;
-    border-radius: 50%;
-    padding: 5px;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    position: absolute;
-    top: -8px;
-    right: 85px;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
 </style>
 
 <nav class="navbar navbar-light fixed-top bg-primary" style="padding:0;min-height: 3.5rem">
