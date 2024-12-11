@@ -1,3 +1,4 @@
+<?php include ('./db_connect.php'); ?>
 <style>
   .logo {
     margin: auto;
@@ -6,6 +7,21 @@
     padding: 7px 11px;
     border-radius: 50% 50%;
     color: #000000b3;
+  }
+  .badge-txt {
+    color: white;
+    background-color: red;
+    border-radius: 50%;
+    padding: 5px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    position: absolute;
+    top: -8px;
+    right: 85px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
   }
 </style>
 
@@ -25,7 +41,7 @@
       <div class="mr-4">
         <a href="index.php?page=inquire" class="text-white">
           <i class="fa fa-bell"></i>
-          <span title="Inquiring" class="badge badge-danger" id="notification_count" style="display: none;">3</span>
+          <span class="badge-txt"><?php echo $conn->query("SELECT * FROM inquire")->num_rows ?></span>
         </a>
       </div>
 
