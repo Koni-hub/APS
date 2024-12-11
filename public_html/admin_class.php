@@ -524,11 +524,11 @@ Class Action {
 		$data['months'] = $countMounts;
 	
 		// Total payable amount
-		$payable = $price;
+		$payable = $price; 	
 		$data['payable'] = number_format($price, 2);
 
 		// Calculate total paid
-		$stmt = $this->db->prepare("SELECT (amount) AS paid FROM payments WHERE tenant_id = ?");
+		$stmt = $this->db->prepare("SELECT (amount) AS paid FROM payments WHERE tenant_id = ? ORDER BY date_created DESC LIMIT 1");
 		$stmt->bind_param('i', $_POST['id']);
 		error_log('Tenant ID: ' . $_POST['id']);
 		$stmt->execute();

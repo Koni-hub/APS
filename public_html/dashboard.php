@@ -1,5 +1,4 @@
 <?php
-// Check if user ID is provided in the URL
 if (!isset($_GET['user_id'])) {
     echo "Error: User ID not provided";
     exit();
@@ -7,10 +6,8 @@ if (!isset($_GET['user_id'])) {
 
 $user_id = intval($_GET['user_id']);
 
-// Connect to the database
-include ('./db_connect.php');
+include('./db_connect.php');
 
-// Fetch tenant information along with house details
 $sql = "SELECT tenants.*, houses.house_no, houses.description AS house_description, houses.price AS monthly_rate 
         FROM tenants 
         INNER JOIN houses ON tenants.house_id = houses.id 
@@ -27,23 +24,20 @@ if ($result->num_rows !== 1) {
 
 $tenantInfo = $result->fetch_assoc();
 
-// Initialize variables
 $total_paid = 0;
 $outstanding_balance = 0;
 $last_payment_info = "N/A";
-$overpaid_amount = 0; 
+$overpaid_amount = 0;
 $next_month_payable = $tenantInfo['monthly_rate'];
 
-// Fetch total paid amount
-$sql_balance = "SELECT COALESCE(SUM(amount), 0) AS total_paid FROM payments WHERE tenant_id = ?";
+$sql_balance = "SELECT COALESCE(SUM(amount), 0) AS total_paid FROM payments WHERE tenant_id = ? ORDER BY date_created DESC LIMIT 1";
 $stmt_balance = $conn->prepare($sql_balance);
 $stmt_balance->bind_param("i", $user_id);
 $stmt_balance->execute();
 $result_balance = $stmt_balance->get_result();
 $total_paid = $result_balance->fetch_assoc()['total_paid'];
 
-// Fetch last payment
-$sql_last_payment = "SELECT amount, date_created FROM payments WHERE tenant_id = ? ORDER BY date_created DESC LIMIT 1";
+$sql_last_payment = "SELECT (amount), date_created FROM payments WHERE tenant_id = ? ORDER BY date_created DESC LIMIT 1";
 $stmt_last_payment = $conn->prepare($sql_last_payment);
 $stmt_last_payment->bind_param("i", $user_id);
 $stmt_last_payment->execute();
@@ -54,32 +48,50 @@ if ($result_last_payment->num_rows === 1) {
     $last_payment_info = $row_last_payment['amount'] . " on " . date("M d, Y", strtotime($row_last_payment['date_created']));
 }
 
-// Calculate months and payable amount
 $date_in = $tenantInfo['date_in'];
 $price = $tenantInfo['monthly_rate'];
 $current_date = date('Y-m-d');
-$months = max(0, floor((strtotime($current_date) - strtotime($date_in)) / (30 * 24 * 60 * 60)));
-$payable = $price * $months;
 
-// Calculate outstanding balance
-$outstanding_balance = max(0, $payable - $total_paid); // Amount owed
+$dateInObj = new DateTime($date_in);
+$currentDateObj = new DateTime($current_date);
 
-// Determine next month's payable amount
-if ($outstanding_balance > 0) {
-    // Tenant has underpaid
-    $next_month_payable = $price + $outstanding_balance; // Add outstanding to next month's rent
-} else {
-    // Tenant has overpaid or is up to date
-    $overpaid_amount = max(0, $total_paid - $payable);
-    $next_month_payable = max(0, $price - $overpaid_amount); // Deduct overpayment from next month's rate
+$interval = $dateInObj->diff($currentDateObj);
+
+$months = ($interval->y * 12) + $interval->m;
+
+if ($currentDateObj->format('d') < $dateInObj->format('d')) {
+    $months--;
 }
 
-// Calculate next payment and covered period
+if ($months == 0) {
+    $months = 1;
+}
+
+$payable = $price * $months;
+
+$outstanding_balance = $payable - $total_paid;
+
+if ($outstanding_balance < 0) {
+    // Tenant has underpaid
+    $next_month_payable = $price + $outstanding_balance;
+} else {
+    // Tenant has overpaid or is up to date
+    $overpaid_amount = $total_paid - $payable;
+    if ($overpaid_amount > 0) {
+        $next_month_payable = max(0, $price - $overpaid_amount);
+    } else {
+        $next_month_payable = $price;
+    }
+}
+
+if ($next_month_payable < 0) {
+    $next_month_payable = 0;
+}
+
 $last_payment_date = ($last_payment_info == "N/A") ? $current_date : date("Y-m-d", strtotime($row_last_payment['date_created']));
 $next_payment_month = date("M Y", strtotime($last_payment_date . " +1 month"));
 $covered_period = date("M Y", strtotime($last_payment_date)) . " to " . $next_payment_month;
 
-// Fetch payment count
 $get_count_payment_date = "SELECT COUNT(date_created) AS countDate FROM payments WHERE tenant_id = ?";
 $stmt_count = $conn->prepare($get_count_payment_date);
 $stmt_count->bind_param("i", $user_id);
@@ -92,6 +104,7 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -99,6 +112,7 @@ $conn->close();
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
+
 <body class="bg-gray-100">
     <div class="container mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
         <div class="container mx-auto mt-6 p-6 text-center">
@@ -149,13 +163,8 @@ $conn->close();
                                     <th class="text-left font-medium text-gray-600">Next Month Payable</th>
                                     <td class="text-gray-800">
                                         <?php
-                                        if ($outstanding_balance > 0) {
-                                            // Tenant has underpaid (Debit)
-                                            echo "Debit: " . number_format($next_month_payable, 2) . " (Outstanding: " . number_format($outstanding_balance, 2) . ")";
-                                        } else {
-                                            // No outstanding; show regular rate
-                                            echo "Payable: " . number_format($next_month_payable, 2);
-                                        }
+                                        $new_next_month_payable = $total_paid + $price;
+                                        echo number_format($new_next_month_payable, 2);
                                         ?>
                                     </td>
                                 </tr>
@@ -192,4 +201,5 @@ $conn->close();
         </div>
     </div>
 </body>
+
 </html>

@@ -63,7 +63,9 @@ foreach($qry->fetch_array() as $k => $val){
         <hr>
         <p>Tenant: <b class="tname"></b></p>
         <p>Monthly Rental Rate: <b class="price"></b></p>
+        <p>New Price: <b class="new_price"></b></p>
         <p>Outstanding Balance: <b class="outstanding_amount"></b></p>
+        <p>Overpaid Balance: <b class="overpaid_amount"></b></p>
         <p>Rent Started: <b class='rent_started'></b></p>
         <p>Payable Months: <b class="payable_months"></b></p>
         <hr>
@@ -125,15 +127,29 @@ foreach($qry->fetch_array() as $k => $val){
                     new_price = price + outstanding_amount; 
                 }
 
+                let formatted_price = new_price.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
+                let formatted_overpaid_amount = overpaid_amount.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
+                let formatted_outstanding_amount = outstanding_amount.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
                 details.find('.tname').text(resp.name);
                 details.find('.price').text(resp.price);
-                details.find('.new_price').text(new_price);
+                details.find('.new_price').text(formatted_price);
                 details.find('.rent_started').text(resp.rent_started);
                 details.find('.payable_months').text(resp.months);
-                details.find('.overpaid_amount').text(overpaid_amount > 0 ? overpaid_amount : '0');
-                details.find('.outstanding_amount').text(outstanding_amount > 0 ? outstanding_amount : '0');
+                details.find('.overpaid_amount').text(formatted_overpaid_amount);
+                details.find('.outstanding_amount').text(formatted_outstanding_amount);
 
-                
                 $('#details').html(details);
             }
         },
