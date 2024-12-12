@@ -1,4 +1,9 @@
 <?php include('./db_connect.php'); ?>
+<?php
+$result = $conn->query("SELECT COUNT(*) AS unread_count FROM inquire WHERE unread = 0");
+$row = $result->fetch_assoc();
+$unreadCount = $row['unread_count'];
+  ?>
 <style>
   .logo {
     margin: auto;
@@ -57,9 +62,11 @@
         <div class="mr-4">
           <a href="index.php?page=inquire" class="text-white position-relative">
             <i class="fa fa-bell"></i>
-            <span class="badge-notify position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              <?php echo $conn->query("SELECT * FROM inquire")->num_rows ?>
-            </span>
+            <?php if ($unreadCount > 0): ?>
+              <span class="badge-notify position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <?php echo $unreadCount; ?>
+              </span>
+            <?php endif; ?>
           </a>
         </div>
         <!-- Account Settings Dropdown (Login Name) -->
