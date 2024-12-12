@@ -5,9 +5,18 @@ include ('./db_connect.php');
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+$updateQuery = "UPDATE inquire SET unread = 1 WHERE unread = 0";
 
-$sql = "SELECT * FROM inquire";
-$result = $conn->query($sql);
+if ($conn->query($updateQuery) === TRUE) {
+    $sql = "SELECT * FROM inquire";
+    $result = $conn->query($sql);
+
+    if (!$result) {
+        echo "Error fetching inquiries: " . $conn->error;
+    }
+} else {
+    echo "Error updating inquiries: " . $conn->error;
+}
 ?>
 
 <div class="container-fluid">
