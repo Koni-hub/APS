@@ -17,6 +17,7 @@
         <nav class="bg-white border-gray-200 dark:bg-gray-900">
             <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                 <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+                    <img class="rounded-full" src="./pictures/sharlogo.png" width="50" height="50" alt="Shermelle Logo">
                     <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Home</span>
                 </a>
                 <button data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
@@ -45,7 +46,7 @@
                     </div>
 
                     <a href="./rentee.php">
-                        <button class="block w-full bg-blue-600 text-white px-5 py-1 rounded">
+                        <button class="block w-full bg-blue-600 text-white px-5 py-2 rounded">
                             Login
                         </button>
                     </a>
@@ -56,10 +57,16 @@
     </header>
 
     <main class="flex-grow">
-        <div class="py-8">
-            <div class="container mx-auto text-center py-8">
-                <h1 class="text-2xl font-bold mb-4">SHERMELLE APARTMENT</h1>
-                <!-- <img src="./pictures/sharmelle.png" alt="Apartment Image" class="w-full h-auto max-w-screen-xl mx-auto object-cover" /> -->
+        <div class="relative bg-cover bg-center h-screen" style="background-image: url('./pictures/samplee.jpg');">
+            <div class="absolute inset-0 bg-black bg-opacity-75"></div>
+            <div class="container mx-auto text-center flex flex-col justify-center items-center h-full relative z-10 text-white">
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-6">Welcome to Shermelle Apartment</h1>
+                <p class="text-sm sm:text-lg md:text-xl font-light mb-8 font-sans leading-relaxed max-w-xl mx-auto">
+                    Enjoy affordable living with modern amenities, a prime location, and ultimate comfort. Your perfect apartment awaits!
+                </p>
+                <a href="#apartments" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300">
+                    Explore Apartments
+                </a>
             </div>
         </div>
         <section id="apartments" class="py-8">
