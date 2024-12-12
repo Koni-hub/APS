@@ -159,12 +159,15 @@ INSERT INTO `house_images` (`id`, `house_id`, `image_path`, `room_name`, `is_pri
 --
 
 CREATE TABLE `inquire` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `email` varchar(100) NOT NULL,
   `phone` varchar(20) NOT NULL,
   `message` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `ip_address` varchar(250) NOT NULL,
+  `unread` TINYINT(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -181,13 +184,17 @@ INSERT INTO `inquire` (`id`, `name`, `email`, `phone`, `message`, `created_at`) 
 -- Table structure for table `payments`
 --
 
-CREATE TABLE `payments` (
-  `id` int(30) NOT NULL,
-  `tenant_id` int(30) NOT NULL,
-  `amount` float NOT NULL,
-  `invoice` varchar(50) NOT NULL,
-  `date_created` datetime NOT NULL DEFAULT current_timestamp()
+CREATE TABLE `inquire` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `message` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `unread` TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 
 --
 -- Dumping data for table `payments`
