@@ -50,14 +50,27 @@
 								");
 
 								while($row=$tenant->fetch_assoc()):
-									$months = abs(strtotime(date('Y-m-d')." 23:59:59") - strtotime($row['date_in']." 23:59:59"));
-									$months = floor(($months) / (30*60*60*24));
-									$payable = $row['price'] * $months;
+									$date_in = new DateTime($row['date_in']);
+									$current_date = new DateTime();
+									$interval = $date_in->diff($current_date);
+									$months = $interval->y * 12 + $interval->m;
+
+									if ($months == 0) {
+										$months = 1;
+									}
+
+									$total_month_pay = $row['price'] * $months;
+
 									$paid = $conn->query("SELECT SUM(amount) as paid FROM payments where tenant_id =".$row['id']);
+
 									$last_payment = $conn->query("SELECT * FROM payments where tenant_id =".$row['id']." order by unix_timestamp(date_created) desc limit 1");
 									$paid = $paid->num_rows > 0 ? $paid->fetch_array()['paid'] : 0;
 									$last_payment = $last_payment->num_rows > 0 ? date("M d, Y",strtotime($last_payment->fetch_array()['date_created'])) : 'N/A';
-									$outstanding = $paid - $payable; // diko gets???
+									$outstanding = $total_month_pay - $paid ;
+
+									if ($outstanding < 0) {
+										$outstanding = 0;
+									}
 								?>
 								<tr>
 									<td class="text-center"><?php echo $i++ ?></td>
@@ -73,7 +86,7 @@
 									<td class="">
 										 <p> <b><?php echo number_format($row['price'],2) ?></b></p>
 									</td>
-									<td class="text-right">
+									<td class="">
 										 <p> <b><?php echo number_format($outstanding,2) ?></b></p>
 									</td>
 									<td class="">
