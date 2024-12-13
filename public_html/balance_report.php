@@ -43,7 +43,8 @@
 									<tr>
 										<th>#</th>
 										<th>Tenant</th>
-										<th>House #</th>
+										<th>House</th>
+										<th>House Type</th>
 										<th>Monthly Rate</th>
 										<th>Payable Months</th>
 										<th>Payable Amount</th>
@@ -56,7 +57,25 @@
 									<?php 
 									$i = 1;
 									// $tamount = 0;
-									$tenants =$conn->query("SELECT t.*,concat(t.lastname,', ',t.firstname,' ',t.middlename) as name,h.house_no,h.price FROM tenants t inner join houses h on h.id = t.house_id where t.status = 1 order by h.house_no desc ");
+									$tenants =$conn->query("SELECT 
+																		t.*, 
+																		CONCAT(t.lastname, ', ', t.firstname, ' ', t.middlename) AS name, 
+																		h.house_no, 
+																		h.price, 
+																		c.name AS category_name 
+																	FROM 
+																		tenants t 
+																	INNER JOIN 
+																		houses h 
+																		ON h.id = t.house_id 
+																	INNER JOIN 
+																		categories c 
+																		ON c.id = h.category_id 
+																	WHERE 
+																		t.status = 1 
+																	ORDER BY 
+																		h.house_no DESC;
+																	");
 									if($tenants->num_rows > 0):
 									while($row=$tenants->fetch_assoc()):
 										$months = abs(strtotime(date('Y-m-d')." 23:59:59") - strtotime($row['date_in']." 23:59:59"));
@@ -72,6 +91,7 @@
 										<td><?php echo $i++ ?></td>
 										<td><?php echo ucwords($row['name']) ?></td>
 										<td><?php echo $row['house_no'] ?></td>
+										<td><?php echo $row['category_name'] ?></td>
 										<td class="text-right"><?php echo number_format($row['price'],2) ?></td>
 										<td class="text-right"><?php echo $months.' mo/s' ?></td>
 										<td class="text-right"><?php echo number_format($payable,2) ?></td>
