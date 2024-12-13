@@ -21,16 +21,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = htmlspecialchars($_POST['message']);
         $unread = 0;
 
-        // Get IP address
-        $ip_response = file_get_contents('https://api.ipify.org?format=json');
-        if ($ip_response === false) {
-            $response['message'] = "Failed to retrieve IP address";
-            echo json_encode($response);
+        // Function to get the real IP address of the visitor
+        function getVisitorIP() {
+            if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+                return $_SERVER['HTTP_CF_CONNECTING_IP'];
+            } elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+                return $_SERVER['HTTP_CLIENT_IP'];
+            } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                return explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+            } else {
+                return $_SERVER['REMOTE_ADDR'];
+            }
+        }
+
+        // Get the visitor's IP
+        $ip_response = getVisitorIP();
+
+        // Check if IP was retrieved
+        if (empty($ip_response)) {
+            $response['message'] = "Failed to retrieve the visitor's IP address.";
+            echo json_encode($response); // Ensure no extra output before this
             exit;
         }
 
-        $data = json_decode($ip_response, true);
-        $ip_address = $data['ip'];
+        // Set the visitor's IP address
+        $ip_address = $ip_response;
 
         // Insert data into database
         $sql = "INSERT INTO inquire (name, email, phone, message, ip_address, unread) VALUES (?, ?, ?, ?, ?, ?)";
@@ -40,7 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             // Prepare to send email using PHPMailer
             $mail = new PHPMailer(true);
-
             try {
                 // Server settings
                 $mail->isSMTP();
@@ -67,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Send the email
                 if ($mail->send()) {
                     $response['status'] = 'success';
-                    $response['message'] = 'Message has been sent successfully.';
+                    $response['message'] = 'Message has been sent successfully and data stored.';
                 } else {
                     $response['message'] = 'Mailer Error: ' . $mail->ErrorInfo;
                 }
@@ -90,3 +104,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Output the response as JSON
 echo json_encode($response);
+?>
