@@ -83,10 +83,10 @@
 										 <p> <b><?php echo ucwords($row['room_id']) ?></b></p>
 									</td>
 									<td class="">
-										 <p> <b><?php echo ucwords($row['invoice']) ?></b></p>
+										 <p> <b><?php echo ucwords($row['category_name']) ?></b></p>
 									</td>
 									<td class="">
-										 <p> <b><?php echo ucwords($row['category_name']) ?></b></p>
+										 <p> <b><?php echo ucwords($row['invoice']) ?></b></p>
 									</td>
 									<td class="text-right">
 										 <p> <b><?php echo number_format($row['amount'],2) ?></b></p>
