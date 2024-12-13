@@ -47,9 +47,10 @@
                     </div>
                     <div class="block py-2 px-3 text-gray-900 rounded-lg hover:bg-blue-100 md:hover:bg-transparent md:border-0 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">
                         <select id="filterFloor" class="w-full py-2 pl-4 pr-10 text-gray-900 bg-transparent border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <option value="" disabled selected>Floor</option>
+                            <option value="" disabled selected>Select Floor/House Type</option>
                             <option value="firstFloor">1st Floor</option>
                             <option value="secondFloor">2nd Floor</option>
+                            <option value="familyHouse">2 Story House</option>
                         </select>
                     </div>
 
@@ -153,35 +154,20 @@
                         }   
 
                         // Display house details
-                        echo '<div data-status="' . $house_status . '" data-category="'.htmlspecialchars($row['category_name']) .'" class="house bg-white p-5 rounded-lg shadow-lg">';
+                        echo '<div data-status="' . $house_status . '" data-category="' . htmlspecialchars($row['category_name']) . '" class="house bg-white p-5 rounded-lg shadow-lg" onclick="openFullScreenImage(\'' . addslashes(htmlspecialchars($banner_image)) . '\')">';
                         echo '<div class="bg-white">';
-                        echo '<img id="house-banner-' . $house_id . '" src="' . htmlspecialchars($banner_image) . '" alt="House Banner" class="w-full h-40 object-cover">';
+                        echo '<img id="house-banner-' . $house_id . '" src="' . htmlspecialchars($banner_image) . '" alt="House Banner" class="w-full h-40 object-cover cursor-pointer">';
                         echo '<div class="p-4">';
                         echo '<h1 class="text-2xl font-semibold mb-2">' . htmlspecialchars($row['category_name']) . '</h1>';
                         echo '<p class="font-semibold mb-2">' . htmlspecialchars($row['description']) . '</p>';
                         echo '<p class="font-semibold mb-2">Room Count: ' . number_format($row['NumberOfRooms']) . '</p>';
                         echo '<p class="font-semibold mb-2">Room PrefixName: ' . htmlspecialchars($row['roomPrefixName']) . '</p>';
                         echo '<p class="text-xl font-bold text-green-600">' . number_format($row['price'], 2) . ' MONTHLY</p>';
-                        echo        '</br><hr><br>';
-                        echo            $rooms_display;
-                        // echo '<button class="bg-blue-500 text-white px-4 py-2 rounded mt-4" onclick="openModal(' . $house_id . ')">View Rooms</button>';
-                        // echo '<button class="bg-gray-600 text-white ml-2 px-4 py-2 rounded mt-4" onclick="window.location.href=\'view-house.php?house_id=' . $house_id . '\'">House Info</button>';
+                        echo '</br><hr><br>';
+                        echo $rooms_display;
                         echo '</div>';
                         echo '</div>';
                         echo '</div>';
-
-                        // Modal
-                        // echo '<div id="modal-' . $house_id . '" class="modal fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 backdrop-blur-md hidden z-50">';
-                        // echo    '<div class="modal-content bg-white bg-opacity-30 pt-10 pr-12 pb-10 pl-10 rounded-lg max-w-4xl mx-auto transform transition-all duration-300 scale-95 hover:scale-100">';
-                        // echo        '<button onclick="closeModal(' . $house_id . ')" class="absolute top-1 right-4 text-3xl font-bold text-red-600 hover:text-red-700 focus:outline-none transition-colors duration-300">×</button>';
-                        // echo        '<h2 class="font-semibold text-2xl text-center text-gray-800 mb-8">Rooms for House ' . htmlspecialchars($row['house_no']) . '</h2>';
-                        // echo        '<div id="room-details-' . $house_id . '" class="space-y-6">';
-                        // echo        '<hr>';
-                        // echo            $rooms_display;
-                        // echo        '</div>';
-                        // echo    '</div>';
-                        // echo '</div>';
-
 
                         $image_stmt->close();
                     }
@@ -192,6 +178,15 @@
                 $conn->close();
                 ?>
 
+                </div>
+                <!-- Full-screen Modal for the image -->
+                <div id="full-screen-modal" class="fixed inset-0 bg-black bg-opacity-75 hidden flex justify-center items-center z-50">
+                    <div class="relative">
+                        <img id="full-screen-image" src="" alt="Full-Screen Image" class="max-w-full max-h-screen object-contain p-2">
+                    </div>
+                    <button onclick="closeFullScreen()" class="absolute top-4 right-4 text-white text-3xl sm:top-4 sm:right-4 lg:top-6 lg:right-6">
+                            &times;
+                        </button>
                 </div>
             </div>
         </section>
@@ -255,20 +250,24 @@
     });
     document.getElementById('filterFloor').addEventListener('change', function () {
         const selectedFloor = this.value;
-        const firstFloorHouses = ['Single House A', 'Single House B', 'Single House C', 'Single House D'];
+        const firstFloorHouses = ['Single House A', 'Single House B', 'Single House C', 'Single House D', ];
         const secondFloorHouses = ['Single House E', 'Single House F', 'Single House G', 'Single House H'];
+        const familyHouses = ['Family House A', 'Family House B', 'Family House C', 'Family House D', 'Family House E', 'Family House F'];
 
         let floorCategories = [];
         if (selectedFloor === 'firstFloor') {
             floorCategories = firstFloorHouses;
         } else if (selectedFloor === 'secondFloor') {
             floorCategories = secondFloorHouses;
+        } else if (selectedFloor === 'familyHouse') {
+            floorCategories = familyHouses;
         }
 
         const allHouses = document.querySelectorAll('.house');
 
         allHouses.forEach(house => {
             const houseCategory = house.getAttribute('data-category');
+            console.log('House Status', houseCategory);
 
             if (selectedFloor === '' || floorCategories.includes(houseCategory)) {
                 house.style.display = 'block';
@@ -278,6 +277,20 @@
         });
     });
 
+    // Function to open full-screen image
+    function openFullScreenImage(imageUrl) {
+        console.log('Image URL: ', imageUrl);
+        const modal = document.getElementById('full-screen-modal');
+        const fullScreenImage = document.getElementById('full-screen-image');
+        fullScreenImage.src = imageUrl.trim(); 
+        modal.classList.remove('hidden');
+    }
+
+    // Function to close full-screen image
+    function closeFullScreen() {
+        const modal = document.getElementById('full-screen-modal');
+        modal.classList.add('hidden');
+    }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.js"></script>
