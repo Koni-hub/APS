@@ -64,7 +64,7 @@
 													c.name AS category_name 
 												FROM payments p 
 												INNER JOIN tenants t ON t.id = p.tenant_id 
-												INNER JOIN categories c ON c.id 
+												INNER JOIN categories c ON c.id  = p.tenant_id
 												WHERE t.status = 1 
 												ORDER BY DATE(p.date_created) DESC;
 												");
