@@ -49,6 +49,7 @@
 									<th class="">Date</th>
 									<th class="">Tenant</th>
 									<th class>Room ID</th>
+									<th class>House Type</th>
 									<th class="">Invoice</th>
 									<th class="">Amount</th>
 									<th class="text-center">Action</th>
@@ -57,7 +58,16 @@
 							<tbody>
 								<?php 
 								$i = 1;
-								$invoices = $conn->query("SELECT p.*, t.room_id, concat(t.lastname,', ',t.firstname,' ',t.middlename) as name FROM payments p inner join tenants t on t.id = p.tenant_id where t.status = 1 order by date(p.date_created) desc ");
+								$invoices = $conn->query("SELECT p.*, 
+													t.room_id, 
+													CONCAT(t.lastname, ', ', t.firstname, ' ', t.middlename) AS name, 
+													c.name AS category_name 
+												FROM payments p 
+												INNER JOIN tenants t ON t.id = p.tenant_id 
+												INNER JOIN categories c ON c.id 
+												WHERE t.status = 1 
+												ORDER BY DATE(p.date_created) DESC;
+												");
 								while($row=$invoices->fetch_assoc()):
 									
 								?>
@@ -74,6 +84,9 @@
 									</td>
 									<td class="">
 										 <p> <b><?php echo ucwords($row['invoice']) ?></b></p>
+									</td>
+									<td class="">
+										 <p> <b><?php echo ucwords($row['category_name']) ?></b></p>
 									</td>
 									<td class="text-right">
 										 <p> <b><?php echo number_format($row['amount'],2) ?></b></p>
@@ -128,7 +141,16 @@
                         });
                         // Return the title with the current date
                         return 'List of Payments - ' + dateString;
-                    }
+                    },
+					customize: function(win) {
+						// Add footer for signature and "Reported By"
+						$(win.document.body).append('<div style="text-align: center; margin-top: 20px;">' +
+							'<div style="display: flex; justify-content: space-between; padding: 10px;">' +
+							'<div style="flex: 1; text-align: left; padding-left: 10px;">Signature: </div>' +
+							'<div style="flex: 1; text-align: center;">Reported By: </div>' +
+							'</div>' +
+							'</div>');
+					}
 				}
 			],
 		});
