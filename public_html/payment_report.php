@@ -8,6 +8,13 @@ $month_of = isset($_GET['month_of']) ? $_GET['month_of'] : date('Y-m');
 	.on-print{
 		display: none;
 	}
+	.footer {
+			margin-top: 50px;
+			font-size: 18px;
+			gap: 45%;
+			display: flex;
+			align-items: center;			
+		}
 </style>
 <noscript>
 	<style>
@@ -23,6 +30,13 @@ $month_of = isset($_GET['month_of']) ? $_GET['month_of'] : date('Y-m');
 		}
 		tr,td,th{
 			border:1px solid black;
+		}
+		.footer {
+			margin-top: 50px;
+			font-size: 18px;
+			gap: 45%;
+			display: flex;
+			align-items: center;			
 		}
 	</style>
 </noscript>
@@ -46,8 +60,9 @@ $month_of = isset($_GET['month_of']) ? $_GET['month_of'] : date('Y-m');
 						</div>
 					<div id="report">
 						<div class="on-print">
+							<h4 class="text-center">Sharmelle Apartment Management System</h4>
 							 <p><center>Rental Payments Report</center></p>
-							 <p><center>for the Month of <b><?php echo date('F ,Y',strtotime($month_of.'-1')) ?></b></center></p>
+							 <p><center>As of <b><?php echo date('F - Y'); ?></b></center></p>
 						</div>
 						<div class="row">
 							<table class="table table-bordered">
@@ -93,6 +108,10 @@ $month_of = isset($_GET['month_of']) ? $_GET['month_of'] : date('Y-m');
 								</tfoot>
 							</table>
 						</div>
+						<div class="footer">
+							<div class="signature text-lg font-semibold">Signature:</div>
+							<div class="reported text-lg font-semibold">Reported By:</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -103,7 +122,7 @@ $month_of = isset($_GET['month_of']) ? $_GET['month_of'] : date('Y-m');
 	$('#print').click(function(){
 		var _style = $('noscript').clone()
 		var _content = $('#report').clone()
-		var nw = window.open("","_blank","width=800,height=700");
+		var nw = window.open("width=800,height=700");
 		nw.document.write(_style.html())
 		nw.document.write(_content.html())
 		nw.document.close()
