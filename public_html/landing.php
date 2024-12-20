@@ -78,6 +78,212 @@
                 </a>
             </div>
         </div>
+        <section id="floorplan" class="h-screen py-8 bg-gray-100 flex items-center justify-center">
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl font-bold text-center mb-6">Floor Plan</h2>
+                <div class="border border-gray-400 shadow-lg w-[500px] h-[300px] bg-white">
+                <!-- Top -->
+                <?php
+                include('./db_connect.php');
+
+                $sql = "SELECT houses.id, houses.house_no, houses.description, houses.price, houses.NumberOfRooms, houses.roomPrefixName, categories.name as category_name
+                        FROM houses
+                        JOIN categories ON houses.category_id = categories.id";
+                $result = $conn->query($sql);
+                echo '<div class="flex justify-center">';
+
+                if ($result->num_rows > 0) {
+                    while($row = $result->fetch_assoc()) {
+                        $house_id = $row['id'];
+
+                        $sql_prefix = "SELECT roomPrefixName FROM houses WHERE id = ?";
+                        $stmt = $conn->prepare($sql_prefix);
+                        $stmt->bind_param("i", $house_id);
+                        $stmt->execute();
+                        $prefix_result = $stmt->get_result();
+                        
+                        if ($prefix_result->num_rows > 0) {
+                            $prefix_row = $prefix_result->fetch_assoc();
+                            $prefixName = $prefix_row['roomPrefixName'];
+
+                            $sql_rooms = "SELECT * FROM roomtbl_" . $prefixName;
+                            $resultRooms = $conn->query($sql_rooms);
+
+                            $available_count = 0;
+                            $occupied_count = 0;
+
+                            $rooms_display = '';
+                            $house_status = 'vacant';
+                            if ($resultRooms->num_rows > 0) {
+                                while ($room = $resultRooms->fetch_assoc()) {
+                                    if ($room['room_status'] == 'Occupied') {
+                                        $occupied_count++;
+                                    } else {
+                                        $available_count++;
+                                    }
+                                
+                                    $room_status_color = ($room['room_status'] == 'Occupied') ? 'bg-red-500' : 'bg-green-500';
+                                    $rooms_display .= "<span class='inline-block w-5 h-4 mx-1 rounded-full " . $room_status_color . "'></span></p><br>";
+                                }
+                                if ($occupied_count > $available_count) {
+                                    $house_status = 'occupied';
+                                } else {
+                                    $house_status = 'vacant';
+                                }
+                            } else {
+                                $rooms_display .= "<p>No rooms found in this category.</p><br>";
+                            }
+                        } else {
+                            $prefixName = null;
+                            $rooms_display = "<p>No rooms available.</p><br>";
+                        }
+
+                        echo '<div class="houses-active flex flex-col justify-start items-center border border-gray-500 bg-white rounded-lg shadow-lg w-full h-64 sm:w-1/2 md:w-1/3 lg:w-1/6" data-category-active="' . htmlspecialchars($row['category_name']) . '">';
+                            echo '<div class="w-full text-center p-2 flex justify-center">';
+                                echo $rooms_display;
+                            echo '</div>';
+                            
+                            echo '<div class="relative">';
+                            echo '<img src="./pictures/room-design.jpg" class="w-full h-full object-cover">';
+                            echo '<div class="absolute inset-0 flex justify-center items-center text-black text-center overflow-hidden">';
+                            echo '<h1 class="text-5xl opacity-50">';
+                            echo htmlspecialchars(str_replace('Family House', '', $row['category_name']));
+                            echo '</h1>';
+                            echo '</div>';
+                            echo '</div>';
+
+                        echo '</div>';
+                    }
+                } else {
+                    echo '<h1 class="text-gray-600">No family houses available.</h1>';
+                }
+
+                echo '</div>';
+
+                $conn->close();
+                ?>
+
+                <!-- Middle separator -->
+                <div class="h-40 bg-gray-300 flex items-center justify-center text-center relative">
+                    <!-- Left Open Door with Outline -->
+                    <div class="absolute left-0">
+                        <!-- Left Door (Open) -->
+                        <div class="w-20 h-20 bg-gray-500 border-4 rounded-tr-full rounded-bl-lg"></div>
+                        <!-- Right Door (Open) -->
+                        <div class="w-20 h-20 bg-gray-500 border-4 rounded-br-full rounded-bl-lg"></div>
+                    </div>
+
+                    <span class="text-6xl text-black-800 opacity-50 font-bold uppercase">Hallway</span>
+                </div>
+
+                <!-- Bottom layout -->
+                <div class="flex h-64">
+                    <!-- Left small section -->
+                    <div class="w-1/5 flex w-50 h-64">
+                        <div class="flex-1 border border-gray-500 m-1 bg-stripes"></div>
+                        <div class="flex-1 border border-gray-500 m-1 bg-stripes"></div> 
+                    </div>
+                    <style>
+                        /* Custom stripe background */
+                        .bg-stripes {
+                            background-image: linear-gradient(0deg, #ccc 25%, transparent 25%, transparent 50%, #ccc 50%, #ccc 75%, transparent 75%, transparent);
+                            background-size: 20px 20px; /* Size of each stripe */
+                        }
+                    </style>
+                    <!-- Center larger boxes -->
+                    <?php
+                    include('./db_connect.php');
+
+                    $sql = "SELECT houses.id, houses.house_no, houses.description, houses.price, houses.NumberOfRooms, houses.roomPrefixName, categories.name as category_name
+                            FROM houses
+                            JOIN categories ON houses.category_id = categories.id";
+                    $result = $conn->query($sql);
+                    echo '<div class="flex justify-center">';
+
+                    if ($result->num_rows > 0) {
+                        while($row = $result->fetch_assoc()) {
+                            $house_id = $row['id'];
+
+                            $sql_prefix = "SELECT roomPrefixName FROM houses WHERE id = ?";
+                            $stmt = $conn->prepare($sql_prefix);
+                            $stmt->bind_param("i", $house_id);
+                            $stmt->execute();
+                            $prefix_result = $stmt->get_result();
+                            
+                            if ($prefix_result->num_rows > 0) {
+                                $prefix_row = $prefix_result->fetch_assoc();
+                                $prefixName = $prefix_row['roomPrefixName'];
+
+                                $sql_rooms = "SELECT * FROM roomtbl_" . $prefixName;
+                                $resultRooms = $conn->query($sql_rooms);
+
+                                $available_count = 0;
+                                $occupied_count = 0;
+
+                                $rooms_display = '';
+                                $house_status = 'vacant';
+                                if ($resultRooms->num_rows > 0) {
+                                    while ($room = $resultRooms->fetch_assoc()) {
+                                        if ($room['room_status'] == 'Occupied') {
+                                            $occupied_count++;
+                                        } else {
+                                            $available_count++;
+                                        }
+                                    
+                                        $room_status_color = ($room['room_status'] == 'Occupied') ? 'bg-red-500' : 'bg-green-500';
+                                        $rooms_display .= "<span class='inline-block w-5 h-4 mx-1 rounded-full " . $room_status_color . "'></span></p><br>";
+                                    }
+                                    if ($occupied_count > $available_count) {
+                                        $house_status = 'occupied';
+                                    } else {
+                                        $house_status = 'vacant';
+                                    }
+                                } else {
+                                    $rooms_display .= "<p>No rooms found in this category.</p><br>";
+                                }
+                            } else {
+                                $prefixName = null;
+                                $rooms_display = "<p>No rooms available.</p><br>";
+                            }
+
+                            echo '<div class="houses-active-sh flex flex-col justify-start items-center border border-gray-500 bg-white rounded-lg shadow-lg w-full h-64 sm:w-1/2 md:w-1/3 lg:w-1/6" data-category-active-sh="' . htmlspecialchars($row['category_name']) . '">';
+                                echo '<div class="w-full text-center p-2 flex justify-center">';
+                                    echo $rooms_display;
+                                echo '</div>';
+
+                                echo '<div class="relative">';
+                                echo '<img src="./pictures/room-design.jpg" class="w-full h-full object-cover">';
+                                echo '<div class="absolute inset-0 flex justify-center items-center text-black text-center overflow-hidden">';
+                                echo '<h1 class="text-5xl opacity-50">';
+                                echo htmlspecialchars(str_replace('Single House', '', $row['category_name']));
+                                echo '</h1>';
+                                echo '</div>';
+                                echo '</div>';
+
+                            echo '</div>';
+                        }
+                    } else {
+                        echo '<h1 class="text-gray-600">No family houses available.</h1>';
+                    }
+
+                    echo '</div>'; // Close grid layout
+
+                    $conn->close();
+                    ?>
+                    <!-- Right small boxes -->
+                    <div class="w-1/5 flex justify-center align-center flex-col p-10 gap-10" id="fp-filterFloor">
+                        <div class="row-span-1 border border-gray-500 text-center align-center cursor-pointer py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600" data-floor="firstFloor" id="firstFloorOption">
+                        1st Floor
+                    </div>
+                    <div class="row-span-1 border border-gray-500 text-center align-center cursor-pointer py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600" data-floor="secondFloor" id="secondFloorOption">
+                        2nd Floor
+                    </div>
+
+                    </div>
+                </div>
+                </div>
+            </div>
+        </section>
         <section id="apartments" class="py-8">
             <div class="container mx-auto px-4">
                 <h2 class="text-3xl font-bold mb-8 text-gray-800 text-center">APARTMENTS</h2>
@@ -226,6 +432,61 @@
 
     <!-- Modal and JavaScript for handling modal opening and closing -->
     <script>
+    //! Active
+    function filterFamilyHouse() {
+        const familyHouses = ['Family House A', 'Family House B', 'Family House C', 'Family House D', 'Family House E', 'Family House F'];
+        const allHouses = document.querySelectorAll('.houses-active');
+
+        allHouses.forEach(house => {
+            const houseCategory = house.getAttribute('data-category-active');
+            console.log('House Category (Active):', houseCategory);
+
+            if (familyHouses.includes(houseCategory)) {
+                house.style.visibility = 'visible';
+                house.style.display = 'flex';
+                house.classList.add('justify-center', 'items-center');
+            } else {
+                house.style.display = 'none';
+            }
+        });
+    }
+
+    document.getElementById('fp-filterFloor').addEventListener('click', function (event) {
+        const selectedFloor = event.target.getAttribute('data-floor');
+        const firstFloorHouses = ['Single House A', 'Single House B', 'Single House C', 'Single House D'];
+        const secondFloorHouses = ['Single House E', 'Single House F', 'Single House G', 'Single House H'];
+
+        const allHouses = document.querySelectorAll('.houses-active-sh');
+        let floorCategories = [];
+
+        if (selectedFloor === 'firstFloor') {
+            floorCategories = firstFloorHouses;
+        } else if (selectedFloor === 'secondFloor') {
+            floorCategories = secondFloorHouses;
+        }
+
+        allHouses.forEach(house => {
+            const houseCategory = house.getAttribute('data-category-active-sh');
+            console.log('House Status (Single House)', houseCategory);
+
+            if (selectedFloor === '' || floorCategories.includes(houseCategory)) {
+                house.style.visibility = 'visible';
+                house.style.display = 'flex';
+            } else {
+                house.style.display = 'none';
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const firstFloorOption = document.querySelector('[data-floor="firstFloor"]');
+        if (firstFloorOption) {
+            firstFloorOption.click();
+        }
+    });
+
+    filterFamilyHouse();
+
     function openModal(houseId) {
         document.getElementById("modal-" + houseId).classList.remove("hidden");
     }
